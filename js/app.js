@@ -1,3 +1,10 @@
+// Security: Basic input sanitization to prevent XSS
+function sanitizeInput(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
+
 function showSection(id) {
     document.querySelectorAll('.content-section').forEach(s => {
         s.classList.add('hidden');
@@ -14,13 +21,16 @@ function showSection(id) {
     document.getElementById('btn-' + id).classList.add('step-active');
 }
 
-const GEMINI_API_KEY = 'AIzaSyAiUZBe8k9j8kgiH-fldFvHTVmwreiyDiM';
+// ⚠️ WARNING: DO NOT commit this file to GitHub with your real API key!
+const GEMINI_API_KEY = 'YOUR_API_KEY_HERE';
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function askAssistant() {
     const inputField = document.getElementById('user-input');
-    const userText = inputField.value.trim();
+
+    // SECURITY UPDATE: Sanitize the raw input right when we grab it
+    const userText = sanitizeInput(inputField.value.trim());
     const chatBox = document.getElementById('chat-box');
 
     if (!userText) return;
@@ -56,7 +66,8 @@ async function askAssistant() {
     chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${'AIzaSyAiUZBe8k9j8kgiH-fldFvHTVmwreiyDiM'}`, {
+        // UPDATED: Now dynamically using the GEMINI_API_KEY variable cleanly
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${'GEMINI_API_KEY'}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
